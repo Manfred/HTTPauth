@@ -54,8 +54,7 @@ module HTTPAuth
         # * <tt>variant</tt>: Specifies whether the directives are for an Authorize header (:credentials),
         #   for a WWW-Authenticate header (:challenge) or for a Authentication-Info header (:auth_info).
         def encode_directives(h, variant)
-          encode = {:domain => :list_to_space_quoted_string, :algorithm => false, :stale => :str_to_bool, :nc => :int_to_hex,
-                    :nextnonce => :quote_string}
+          encode = {:domain => :list_to_space_quoted_string, :algorithm => false, :stale => :str_to_bool, :nc => :int_to_hex}
           if [:credentials, :auth].include? variant
             encode.merge! :qop => false
           elsif variant == :challenge
@@ -485,6 +484,7 @@ module HTTPAuth
         # TODO: update @h after nonce invalidation
         @h[:digest] = options[:digest] if options.include? :digest
         @h[:response_body] = options[:response_body]
+        @h[:nextnonce] = Utils.create_nonce @h[:salt]
         @h[:rspauth] = Utils.calculate_digest(@h, nil, :response)
       end
     end
