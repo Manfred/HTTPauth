@@ -5,7 +5,7 @@ require 'test/unit'
 require 'test_helper'
 require 'httpauth/digest'
 
-class DigestSessionTest < Test::Unit::TestCase
+class DigestScenarioTest < Test::Unit::TestCase
 
   def setup
     remove_tmpdir

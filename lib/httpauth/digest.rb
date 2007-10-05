@@ -486,6 +486,18 @@ module HTTPAuth
         @h[:nextnonce] = Utils.create_nonce @h[:salt]
         @h[:rspauth] = Utils.calculate_digest(@h, nil, :response)
       end
+
+      # Validates rspauth.  Returns <tt>true</tt> or <tt>false</tt>
+      #
+      # * <tt>options</tt>: The extra options needed to validate rspauth.
+      #   * <tt>:digest</tt>: The H(a1) digest
+      #   * <tt>:uri</tt>: request uri
+      #   * <tt>:nonce</tt>:nonce
+      def validate(options)
+        ho = @h.merge(options)
+        return @h[:rspauth] == Utils.calculate_digest(ho, @s, :response)
+      end
+      
     end
     
     # Conversion for a number of internal data structures to and from directives in the headers. Implementations
@@ -495,7 +507,7 @@ module HTTPAuth
       
         # Adds quotes around the string
         def quote_string(str)
-          "\"#{str.gsub('"', '')}\""
+          "\"#{str.gsub(/\"/, '')}\""
         end
 
         # Removes quotes from around a string
