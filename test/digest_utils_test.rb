@@ -14,11 +14,11 @@ class DigestUtilsTest < Test::Unit::TestCase
         'Digest realm="mp@mount.dwerg.net", nonce="QG4LS2UcBAA=b978f6e632f6b9f7a8927ab48e20ef61d967552b", algorithm=MD5, qop="auth"' => {:realm => 'mp@mount.dwerg.net', :nonce => 'QG4LS2UcBAA=b978f6e632f6b9f7a8927ab48e20ef61d967552b', :algorithm => 'MD5', :qop => ['auth']}
       },
       :auth => {
-        'nextnonce="QG4LS2UcBAA=b978f6e632f6b9f7a8927ab48e20ef61d967552b"' => { :nextnonce => 'QG4LS2UcBAA=b978f6e632f6b9f7a8927ab48e20ef61d967552b' },
-        'nextnonce="something", qop=auth, cnonce="0a4f113b", nc=00000001' => {
-          :nextnonce => 'something', :qop => 'auth', :cnonce => '0a4f113b', :nc => 1 },
-        'nextnonce="something", qop=auth, cnonce="0a4f113b", nc=00000001, rspauth="5ccc069c403ebaf9f0171e9517f40e41"' => {
-          :nextnonce => 'something', :qop => 'auth', :cnonce => '0a4f113b', :nc => 1,
+        'nextnonce="4b21d1ddd4f814c3e7c26226ffa4ddf33a261982ff915c1154a8"' => { :nextnonce => '4b21d1ddd4f814c3e7c26226ffa4ddf33a261982ff915c1154a8' },
+        'nextnonce="5339bdd7a1d4032a4e4cac3733ee59d63da44efe9e1412f15881", qop=auth, cnonce="0a4f113b", nc=00000001' => {
+          :nextnonce => '5339bdd7a1d4032a4e4cac3733ee59d63da44efe9e1412f15881', :qop => 'auth', :cnonce => '0a4f113b', :nc => 1 },
+        'nextnonce="19c325e2ebf0e938c3c67225aba5f23ad245a522415d6cbb3c16", qop=auth, cnonce="0a4f113b", nc=00000001, rspauth="5ccc069c403ebaf9f0171e9517f40e41"' => {
+          :nextnonce => '19c325e2ebf0e938c3c67225aba5f23ad245a522415d6cbb3c16', :qop => 'auth', :cnonce => '0a4f113b', :nc => 1,
           :rspauth => '5ccc069c403ebaf9f0171e9517f40e41' }
       }
     }

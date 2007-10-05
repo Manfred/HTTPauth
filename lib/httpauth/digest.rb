@@ -88,8 +88,7 @@ module HTTPAuth
         #   for a WWW-Authenticate header (:challenge) or for a Authentication-Info header (:auth_info).        
         def decode_directives(directives, variant)
           raise HTTPAuth::UnwellformedHeader.new("Can't decode directives which are nil") if directives.nil?
-          decode = {:domain => :space_quoted_string_to_list, :algorithm => false, :stale => :bool_to_str, :nc => :hex_to_int,
-                    :nextnonce => :unquote_string}
+          decode = {:domain => :space_quoted_string_to_list, :algorithm => false, :stale => :bool_to_str, :nc => :hex_to_int, :nextnonce => :unquote_string}
           if [:credentials, :auth].include? variant
             decode.merge! :qop => false
           elsif variant == :challenge
