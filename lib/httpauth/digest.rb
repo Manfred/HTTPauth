@@ -481,7 +481,7 @@ module HTTPAuth
       # Updates @h from options, generally called after an instance was created with <tt>from_credentials</tt>.
       def update_from_credentials!(options)
         # TODO: update @h after nonce invalidation
-        %w(:digest :username :realm :password).each do |k|
+        [:digest, :username, :realm, :password].each do |k|
           @h[k] = options[k] if options.include? k
         end
         @h[:response_body] = options[:response_body]
