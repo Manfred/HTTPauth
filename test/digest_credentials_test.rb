@@ -78,7 +78,8 @@ class DigestCredentialsTest < Test::Unit::TestCase
       :method=>"GET",
       :response=>"5e7bbe24dac88a1936edf1a89cae6168",
       :cnonce=>"30b49be53eab919d",
-      :qop=>"auth"
+      :qop=>"auth",
+      :stale => false
     assert credentials.validate({})
   end
 end

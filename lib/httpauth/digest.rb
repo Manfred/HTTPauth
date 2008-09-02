@@ -54,7 +54,7 @@ module HTTPAuth
         # * <tt>variant</tt>: Specifies whether the directives are for an Authorize header (:credentials),
         #   for a WWW-Authenticate header (:challenge) or for a Authentication-Info header (:auth_info).
         def encode_directives(h, variant)
-          encode = {:domain => :list_to_space_quoted_string, :algorithm => false, :stale => :str_to_bool, :nc => :int_to_hex}
+          encode = {:domain => :list_to_space_quoted_string, :algorithm => false, :stale => :bool_to_str, :nc => :int_to_hex}
           if [:credentials, :auth].include? variant
             encode.merge! :qop => false
           elsif variant == :challenge
@@ -88,7 +88,7 @@ module HTTPAuth
         #   for a WWW-Authenticate header (:challenge) or for a Authentication-Info header (:auth_info).        
         def decode_directives(directives, variant)
           raise HTTPAuth::UnwellformedHeader.new("Can't decode directives which are nil") if directives.nil?
-          decode = {:domain => :space_quoted_string_to_list, :algorithm => false, :stale => :bool_to_str, :nc => :hex_to_int, :nextnonce => :unquote_string}
+          decode = {:domain => :space_quoted_string_to_list, :algorithm => false, :stale => :str_to_bool, :nc => :hex_to_int}
           if [:credentials, :auth].include? variant
             decode.merge! :qop => false
           elsif variant == :challenge
