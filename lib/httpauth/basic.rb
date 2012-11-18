@@ -105,7 +105,7 @@ module HTTPAuth
       #   RewriteEngine on
       #   RewriteRule ^admin/ - [E=X-HTTP-AUTHORIZATION:%{HTTP:Authorization}]
       def get_credentials(env)
-        d = HTTPAuth::CREDENTIAL_HEADERS.inject(false) { |d,h| env[h] || d }
+        d = HTTPAuth::CREDENTIAL_HEADERS.inject(false) { |result,h| env[h] || result }
         return unpack_authorization(d) unless !d or d.nil? or d.empty?
         [nil, nil]
       end
