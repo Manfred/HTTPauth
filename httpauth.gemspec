@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name      = 'httpauth'
-  spec.version   = '0.2.0'
+  spec.version   = '0.2.1'
 
   spec.author   = 'Manfred Stienstra'
   spec.email    = 'manfred@fngtpspec.com'
