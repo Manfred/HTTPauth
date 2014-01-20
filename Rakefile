@@ -1,3 +1,6 @@
+require 'bundler'
+Bundler::GemHelper.install_tasks
+
 require 'rake/testtask'
 
 desc "Run all tests by default"
