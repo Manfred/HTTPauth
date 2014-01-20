@@ -16,7 +16,7 @@ class AuthenticationServlet < HTTPServlet::AbstractServlet
   def do_GET(request, response)
     puts '-'*79
     puts "request: Authorization: " + (request['Authorization'] || '')
-    
+
     credentials = Credentials.from_header(request['Authorization']) unless request['Authorization'].nil?
     if !credentials.nil? and credentials.validate :password => 'secret', :method => 'GET'
       response.status = 200

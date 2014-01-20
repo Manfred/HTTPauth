@@ -17,36 +17,36 @@ class BasicTest < Test::Unit::TestCase
       "Basic realm=\"open=false\"" => 'open=false'
     }
   end
-  
+
   def test_unpack_authorization
     @authorizations.each do |packed, unpacked|
       assert_equal unpacked, HTTPAuth::Basic.unpack_authorization(packed)
     end
   end
-  
+
   def test_pack_authorization
     @authorizations.each do |packed, unpacked|
       assert_equal packed, HTTPAuth::Basic.pack_authorization(*unpacked)
     end
   end
-  
+
   def test_get_credentials
     env = {'HTTP_AUTHORIZATION' => @secret_bob_credentials}
     assert_equal @authorizations[@secret_bob_credentials], HTTPAuth::Basic.get_credentials(env)
   end
-  
+
   def test_pack_challenge
     @authentications.each do |packed, unpacked|
       assert_equal packed, HTTPAuth::Basic.pack_challenge(unpacked)
     end
   end
-  
+
   def test_unpack_challenge
     @authentications.each do |packed, unpacked|
       assert_equal unpacked, HTTPAuth::Basic.unpack_challenge(packed)
     end
   end
-  
+
   def test_invalid_input
     assert_raise(HTTPAuth::UnwellformedHeader) do
       HTTPAuth::Basic.unpack_challenge('Basic relm')

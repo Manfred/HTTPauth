@@ -10,21 +10,21 @@ require 'httpauth/digest'
 SALT = 'My very very secret salt'
 
 class AuthenticationCache
-  
+
   def initialize
     @uri = nil
     @credentials = nil
   end
-  
+
   def set_credentials_for(uri, credentials)
     @uri = get_new_uri(@uri, uri)
     @credentials = credentials
   end
-  
+
   def get_credentials
     @credentials
   end
-  
+
   def update_usage_for(uri, reset_count_for_uri=false)
     if reset_count_for_uri
       @credentials.nc = 0
@@ -32,9 +32,9 @@ class AuthenticationCache
       @credentials.nc += 1
     end
   end
-  
+
   protected
-  
+
   # Is uri1 more general than uri2
   def more_general_uri?(uri1, uri2)
     ua1 = uri1.nil? ? [] : uri1.split('/')
@@ -44,7 +44,7 @@ class AuthenticationCache
     end
     true
   end
-  
+
   def get_new_uri(uri1, uri2)
     if more_general_uri?(uri1, uri2)
       uri1
@@ -56,14 +56,14 @@ end
 
 class AuthenticatedClient
   include HTTPAuth::Digest
-  
+
   def initialize(host, port)
     @client = RFuzz::HttpClient.new host, port
     @cache = AuthenticationCache.new
     @username = nil
     @password = nil
   end
-  
+
   def get_credentials_from_user
     if @username.nil?
       print 'Username: '
@@ -75,11 +75,11 @@ class AuthenticatedClient
     end
     [@username, @password]
   end
-  
+
   # Get a resource from the server
   def get(resource)
     uri = URI.parse resource
-    
+
     # If credentials were stored, use them. Otherwise do a normal get
     credentials = @cache.get_credentials
     unless credentials.nil?

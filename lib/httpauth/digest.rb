@@ -85,7 +85,7 @@ module HTTPAuth
         #
         # * <tt>directives</tt>: The directives
         # * <tt>variant</tt>: Specifies whether the directives are for an Authorize header (:credentials),
-        #   for a WWW-Authenticate header (:challenge) or for a Authentication-Info header (:auth_info).        
+        #   for a WWW-Authenticate header (:challenge) or for a Authentication-Info header (:auth_info).
         def decode_directives(directives, variant)
           raise HTTPAuth::UnwellformedHeader.new("Can't decode directives which are nil") if directives.nil?
           decode = {:domain => :space_quoted_string_to_list, :algorithm => false, :stale => :str_to_bool, :nc => :hex_to_int}
@@ -96,22 +96,22 @@ module HTTPAuth
           else
             raise ArgumentError.new("#{variant} is not a valid value for `variant' use :auth, :credentials or :challenge")
           end
-        
-          start = 0 
-          unless variant == :auth 
+
+          start = 0
+          unless variant == :auth
             # The first six characters are 'Digest '
             start = 6
             scheme = directives[0..6].strip
             raise HTTPAuth::UnwellformedHeader.new("Scheme should be Digest, server responded with `#{directives}'") unless scheme == 'Digest'
           end
-          
+
           # The rest are the directives
           # TODO: split is ugly, I want a real parser (:
           directives[start..-1].split(',').inject({}) do |h,part|
             parts = part.split('=')
             name = parts[0].strip.intern
             value = parts[1..-1].join('=').strip
-            
+
             # --- HACK
             # IE and Safari qoute qop values
             # IE also quotes algorithm values
@@ -119,7 +119,7 @@ module HTTPAuth
               value = Conversions.unquote_string(value)
             end
             # --- END HACK
-            
+
             if decode[name]
               h[name] = Conversions.send decode[name], value
             elsif decode[name].nil?
@@ -130,19 +130,19 @@ module HTTPAuth
             h
           end
         end
-        
+
         # Concat arguments the way it's done frequently in the Digest spec.
         #
         #   digest_concat('a', 'b') #=> "a:b"
         #   digest_concat('a', 'b', c') #=> "a:b:c"
         def digest_concat(*args); args.join ':'; end
-        
+
         # Calculate the MD5 hexdigest for the string data
         def digest_h(data); ::Digest::MD5.hexdigest data; end
-        
+
         # Calculate the KD value of a secret and data as explained in the RFC.
         def digest_kd(secret, data); digest_h digest_concat(secret, data); end
-        
+
         # Calculate the Digest for the credentials
         def htdigest(username, realm, password)
           digest_h digest_concat(username, realm, password)
@@ -162,7 +162,7 @@ module HTTPAuth
             h[:digest] || htdigest(h[:username], h[:realm], h[:password])
           end
         end
-        
+
         # Calculate the H(A2) for the Authorize header as explained in the RFC.
         def request_digest_a2(h)
           # TODO: check for known qop values (look out for the safari qop quote bug)
@@ -203,7 +203,7 @@ module HTTPAuth
             )
           end
         end
-        
+
         # Return a hash with the keys in <tt>keys</tt> found in <tt>h</tt>.
         #
         # Example
@@ -213,7 +213,7 @@ module HTTPAuth
         def filter_h_on(h, keys)
           h.inject({}) { |r,l| keys.include?(l[0]) ? r.merge({l[0]=>l[1]}) : r }
         end
-        
+
         # Create a nonce value of the time and a salt. The nonce is created in such a
         # way that the issuer can check the age of the nonce.
         #
@@ -228,7 +228,7 @@ module HTTPAuth
             )
           ).gsub("\n", '')[0..-3]
         end
-        
+
         # Create a 32 character long opaque string with a 'random' value
         def create_opaque
           s = []; 16.times { s << rand(127).chr }
@@ -236,12 +236,12 @@ module HTTPAuth
         end
       end
     end
-    
+
     # Superclass for all the header container classes
     class AbstractHeader
       # holds directives and values for digest calculation
       attr_reader :h
-      
+
       # Redirects attribute messages to the internal directives
       #
       # Example:
@@ -266,8 +266,8 @@ module HTTPAuth
         end
       end
     end
-    
-    
+
+
     # The Credentials class handlers the Authorize header. The Authorize header is sent by a client who wants to
     # let the server know he has the credentials needed to access a resource.
     #
@@ -275,7 +275,7 @@ module HTTPAuth
     class Credentials < AbstractHeader
       # Holds an explanation why <tt>validate</tt> returned false.
       attr_reader :reason
-      
+
       # Parses the information from an Authorize header and creates a new Credentials instance with the information.
       # The options hash allows you to specify additional information.
       #
@@ -284,7 +284,7 @@ module HTTPAuth
       def self.from_header(authorization, options={})
         new Utils.decode_directives(authorization, :credentials), options
       end
-      
+
       # Creates a new Credential instance based on a Challenge instance.
       #
       # * <tt>challenge</tt>: A Challenge instance
@@ -302,7 +302,7 @@ module HTTPAuth
         end
         new h, options
       end
-      
+
       # Create a new instance.
       #
       # * <tt>h</tt>:  A Hash with directives, normally this is filled with the directives coming from a Challenge instance.
@@ -321,19 +321,19 @@ module HTTPAuth
         @s = session.load
         @reason = 'There has been no validation yet'
       end
-      
+
       # Convenience method, basically an alias for <code>validate(options.merge(:password => password))</code>
       def validate_password(password, options={})
         options[:password] = password
         validate(options)
       end
-      
+
       # Convenience method, basically an alias for <code>validate(options.merge(:digest => digest))</code>
       def validate_digest(digest, options={})
         options[:digest] = digest
         validate(options)
       end
-      
+
       # Validates the credential information stored in the Credentials instance. Returns <tt>true</tt> or
       # <tt>false</tt>. You can read the ue
       #
@@ -348,7 +348,7 @@ module HTTPAuth
         ho = @h.merge(options)
         raise ArgumentError.new("You have to set the :request_body value if you want to use :qop => 'auth-int'") if @h[:qop] == 'auth-int' and ho[:request_body].nil?
         raise ArgumentError.new("Please specify the request method :method (ie. GET)") if ho[:method].nil?
-        
+
         calculated_response = Utils.calculate_digest(ho, @s, :request)
         if ho[:response] == calculated_response
           @reason = ''
@@ -358,13 +358,13 @@ module HTTPAuth
         end
         false
       end
-      
+
       # Encodeds directives and returns a string that can be used in the Authorize header
       def to_header
         Utils.encode_directives Utils.filter_h_on(@h,
           [:username, :realm, :nonce, :uri, :response, :algorithm, :cnonce, :opaque, :qop, :nc]), :credentials
       end
-      
+
       # Updates @h from options, generally called after an instance was created with <tt>from_challenge</tt>.
       def update_from_challenge!(options)
         # TODO: integrity checks
@@ -375,7 +375,7 @@ module HTTPAuth
         @h[:method] = options[:method]
         @h[:request_body] = options[:request_body]
         unless @h[:qop].nil?
-          # Determine the QOP 
+          # Determine the QOP
           if !options[:qop].nil? and @h[:qop].include?(options[:qop])
             @h[:qop] = options[:qop]
           elsif @h[:qop].include?(HTTPAuth::PREFERRED_QOP)
@@ -399,16 +399,16 @@ module HTTPAuth
           Marshal.dump(Utils.filter_h_on(@h, [:username, :realm, :nonce, :algorithm, :cnonce, :opaque, :qop, :nc]), f)
         end
       end
-      
+
     end
-    
+
     # The Challenge class handlers the WWW-Authenticate header. The WWW-Authenticate header is sent by a server when
     # accessing a resource without credentials is prohibided. The header should always be sent together with a 401
     # status.
     #
     # See the Digest module for examples
     class Challenge < AbstractHeader
-      
+
       # Parses the information from a WWW-Authenticate header and creates a new WWW-Authenticate instance with this
       # data.
       #
@@ -417,7 +417,7 @@ module HTTPAuth
       def self.from_header(challenge, options={})
         new Utils.decode_directives(challenge, :challenge), options
       end
-      
+
       # Create a new instance.
       #
       # * <tt>h</tt>: A Hash with directives, normally this is filled with directives coming from a Challenge instance.
@@ -425,7 +425,7 @@ module HTTPAuth
       #   * <tt>:realm</tt>: The name of the realm the client should authenticate for. The RFC suggests to use a string
       #     like 'admin@yourhost.domain.com'. Be sure to use a reasonably long string to avoid brute force attacks.
       #   * <tt>:qop</tt>: A list with supported qop values. For example: <code>['auth-int']</code>. This will default
-      #     to <code>['auth']</code>. Although this implementation supports both auth and auth-int, most 
+      #     to <code>['auth']</code>. Although this implementation supports both auth and auth-int, most
       #     implementations don't. Some implementations get confused when they receive anything but 'auth'. For
       #     maximum compatibility you should leave this setting alone.
       #   * <tt>:algorithm</tt>: The preferred algorithm for calculating the digest. For
@@ -436,7 +436,7 @@ module HTTPAuth
         @h = h
         @h.merge! options
       end
-      
+
       # Encodes directives and returns a string that can be used as the WWW-Authenticate header
       def to_header
         @h[:nonce] ||= Utils.create_nonce @h[:salt]
@@ -447,14 +447,14 @@ module HTTPAuth
           [:realm, :domain, :nonce, :opaque, :stale, :algorithm, :qop]), :challenge
       end
     end
-    
+
     # The AuthenticationInfo class handles the Authentication-Info header. Sending Authentication-Info headers will
-    # allow the client to check the integrity of the response, but it isn't compulsory and will get in the way of 
+    # allow the client to check the integrity of the response, but it isn't compulsory and will get in the way of
     # pipelined retrieval of resources.
     #
     # See the Digest module for examples
     class AuthenticationInfo < AbstractHeader
-      
+
       # Parses the information from a Authentication-Info header and creates a new AuthenticationInfo instance with
       # this data.
       #
@@ -463,7 +463,7 @@ module HTTPAuth
       def self.from_header(auth_info, options={})
         new Utils.decode_directives(auth_info, :auth), options
       end
-      
+
       # Creates a new AuthenticationInfo instance based on the information from Credentials instance.
       #
       # * <tt>credentials</tt>: A Credentials instance
@@ -473,7 +473,7 @@ module HTTPAuth
         auth_info.update_from_credentials! options
         auth_info
       end
-      
+
       # Create a new instance.
       #
       # * <tt>h</tt>: A Hash with directives, normally this is filled with the directives coming from a
@@ -486,13 +486,13 @@ module HTTPAuth
         @h = h
         @h.merge! options
       end
-      
+
       # Encodes directives and returns a string that can be used as the AuthorizationInfo header
       def to_header
         Utils.encode_directives Utils.filter_h_on(@h,
           [:nextnonce, :qop, :rspauth, :cnonce, :nc]), :auth
       end
-      
+
       # Updates @h from options, generally called after an instance was created with <tt>from_credentials</tt>.
       def update_from_credentials!(options)
         # TODO: update @h after nonce invalidation
@@ -514,14 +514,14 @@ module HTTPAuth
         ho = @h.merge(options)
         return @h[:rspauth] == Utils.calculate_digest(ho, @s, :response)
       end
-      
+
     end
-    
+
     # Conversion for a number of internal data structures to and from directives in the headers. Implementations
     # shouldn't have to call any methods on Conversions.
     class Conversions
       class << self
-      
+
         # Adds quotes around the string
         def quote_string(str)
           "\"#{str.gsub(/\"/, '')}\""
@@ -546,7 +546,7 @@ module HTTPAuth
         def str_to_bool(str)
           str == 'true'
         end
-      
+
         # Creates a string value from a boolean => 'true' or 'false'
         def bool_to_str(bool)
           bool ? 'true' : 'false'
@@ -578,7 +578,7 @@ module HTTPAuth
     class Session
       attr_accessor :opaque
       attr_accessor :options
-    
+
       # Initializes the new Session object.
       #
       # * <tt>opaque</tt> - A string to identify the session. This would normally be the <tt>opaque</tt> sent by the
@@ -589,14 +589,14 @@ module HTTPAuth
         self.opaque = opaque
         self.options = options
       end
-    
+
       # Associates the new data to the session and removes the old
       def save(data)
         File.open(filename, 'w') do |f|
           f.write Marshal.dump(data)
         end
       end
-    
+
       # Returns the data from this session
       def load
         begin
@@ -607,9 +607,9 @@ module HTTPAuth
           {}
         end
       end
-    
+
       protected
-    
+
       # The filename from which the session will be saved and read from
       def filename
         "#{options[:tmpdir] || Dir::tmpdir}/ruby_digest_cache.#{self.opaque}"

@@ -24,7 +24,7 @@ class DigestUtilsTest < Test::Unit::TestCase
       }
     }
   end
-  
+
   def test_filter_h_on
     assert_equal({1=>1,2=>2}, HTTPAuth::Digest::Utils.filter_h_on({1=>1,2=>2,3=>3}, [1,2]))
     assert_equal({1=>1}, HTTPAuth::Digest::Utils.filter_h_on({1=>1,2=>2}, [1]))
@@ -32,7 +32,7 @@ class DigestUtilsTest < Test::Unit::TestCase
     assert_equal({}, HTTPAuth::Digest::Utils.filter_h_on({1=>1,2=>2}, []))
     assert_equal({}, HTTPAuth::Digest::Utils.filter_h_on({}, []))
   end
-  
+
   def test_encode_directives
     @data.each do |k,v|
       v.each do |encoded, directives|
@@ -40,7 +40,7 @@ class DigestUtilsTest < Test::Unit::TestCase
       end
     end
   end
-  
+
   def test_decode_directives
     @data.each do |k,v|
       v.each do |encoded, directives|
@@ -48,45 +48,45 @@ class DigestUtilsTest < Test::Unit::TestCase
       end
     end
   end
-  
+
   def test_decode_hacks
     # Test to see if the IE and Safari directive encode problems are HACKed around
     directives = HTTPAuth::Digest::Utils.decode_directives("Digest qop=\"auth\", algorithm=\"MD5\"", :credentials)
     assert_equal 'auth', directives[:qop]
     assert_equal 'MD5', directives[:algorithm]
   end
-  
+
   def test_encode_decode_mirror
     @data.each do |k,v|
       v.each do |_, directives|
-        assert_equal directives,  
+        assert_equal directives,
           HTTPAuth::Digest::Utils.decode_directives(
             HTTPAuth::Digest::Utils.encode_directives(directives, k),
           k), "In #{k}, in #{directives.inspect}"
       end
     end
   end
-  
+
   def test_digest_concat
     assert_equal '', HTTPAuth::Digest::Utils.digest_concat
     assert_equal 'a', HTTPAuth::Digest::Utils.digest_concat('a')
     assert_equal 'a:b:c', HTTPAuth::Digest::Utils.digest_concat('a', 'b', 'c')
   end
-  
+
   def test_digest_h
     assert_raise(TypeError) do
       HTTPAuth::Digest::Utils.digest_h(nil)
     end
     assert_equal 32, HTTPAuth::Digest::Utils.digest_h('a').length
   end
-  
+
   def test_digest_kd
     assert_equal 32, HTTPAuth::Digest::Utils.digest_kd(nil, nil).length
     assert_equal 32, HTTPAuth::Digest::Utils.digest_kd(nil, 'b').length
     assert_equal 32, HTTPAuth::Digest::Utils.digest_kd('a', nil).length
     assert_equal 32, HTTPAuth::Digest::Utils.digest_kd('a', 'b').length
   end
-  
+
   def test_digest_a1
     [
       ['742ec081c96652ff7aed5d819ea0061b', {:username => 'marcél',
@@ -116,7 +116,7 @@ class DigestUtilsTest < Test::Unit::TestCase
       assert_equal expected[0], HTTPAuth::Digest::Utils.digest_a1(expected[1], expected[2]), "In #{i}:"
     end
   end
-  
+
   def test_request_digest_a2
     [
       ['bfdaff59f040a7a7e2a96fc32841dcf7', { :method => 'GET', :uri => '/posts/1'}],
@@ -127,13 +127,13 @@ class DigestUtilsTest < Test::Unit::TestCase
       assert_equal expected[0], HTTPAuth::Digest::Utils.request_digest_a2(expected[1]), "In #{i}:"
     end
   end
-  
+
   def test_create_nonce
     salt = 'My secret salt'
     assert HTTPAuth::Digest::Utils.create_nonce(salt).length > 32
     assert HTTPAuth::Digest::Utils.create_nonce(salt) != HTTPAuth::Digest::Utils.create_nonce(salt)
   end
-  
+
   def test_create_opaque
     assert_equal 32, HTTPAuth::Digest::Utils.create_opaque.length
     assert HTTPAuth::Digest::Utils.create_opaque != HTTPAuth::Digest::Utils.create_opaque

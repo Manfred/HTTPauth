@@ -12,10 +12,10 @@ class DigestScenarioTest < Test::Unit::TestCase
     remove_tmpdir
     create_tmpdir
   end
-  
+
   def test_simple
     password = 'secret'
-    
+
     server_challenge = HTTPAuth::Digest::Challenge.new :realm => 'httpauth@example.com'
     client_challenge = HTTPAuth::Digest::Challenge.from_header server_challenge.to_header
     assert_equal server_challenge.h, client_challenge.h

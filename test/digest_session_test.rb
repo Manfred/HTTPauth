@@ -14,19 +14,19 @@ class DigestSessionTest < Test::Unit::TestCase
     create_tmpdir
     @opaque = Digest::MD5.hexdigest Time.now.to_s
   end
-  
+
   def test_session_create_and_load
     h = {:username => 'bob', :password => 'secret'}
     session = HTTPAuth::Digest::Session.new @opaque, :tmpdir => tmpdir
     session.save h
-    
+
     session = HTTPAuth::Digest::Session.new @opaque, :tmpdir => tmpdir
     assert_equal h, session.load
-    
+
     session = HTTPAuth::Digest::Session.new @opaque, :tmpdir => tmpdir
     assert_equal h, session.load
   end
-  
+
   def test_session_load_without_session
     session = HTTPAuth::Digest::Session.new @opaque, :tmpdir => tmpdir
     h = nil

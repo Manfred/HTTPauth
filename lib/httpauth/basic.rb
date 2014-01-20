@@ -7,7 +7,7 @@ module HTTPAuth
   # the server sends a challenge and the client has to respond to that with the correct credentials. These
   # credentials will have to be sent with every request from that point on.
   #
-  # == On the server 
+  # == On the server
   #
   # On the server you will have to check the headers for the 'Authorization' header. When you find one unpack
   # it and check it against your database of credentials. If the credentials are wrong you have to return a
@@ -53,17 +53,17 @@ module HTTPAuth
   #   end
   class Basic
     class << self
-      
+
       # Unpacks the HTTP Basic 'Authorization' credential header
       #
       # * <tt>authorization</tt>: The contents of the Authorization header
       # * Returns a list with two items: the username and password
-      def unpack_authorization(authorization) 
+      def unpack_authorization(authorization)
         d = authorization.split ' '
         raise ArgumentError.new("HTTPAuth::Basic can only unpack Basic Authentication headers") unless d[0] == 'Basic'
         Base64.decode64(d[1]).split(':')[0..1]
       end
-      
+
       # Packs HTTP Basic credentials to an 'Authorization' header
       #
       # * <tt>username</tt>: A string with the username
@@ -71,14 +71,14 @@ module HTTPAuth
       def pack_authorization(username, password)
         "Basic %s" % Base64.encode64("#{username}:#{password}").gsub("\n", '')
       end
-      
+
       # Returns contents for the WWW-authenticate header
       #
       # * <tt>realm</tt>: A string with a recognizable title for the restricted resource
       def pack_challenge(realm)
         "Basic realm=\"%s\"" % realm.gsub('"', '')
       end
-      
+
       # Returns the name of the realm in a WWW-Authenticate header
       #
       # * <tt>authenticate</tt>: The contents of the WWW-Authenticate header
@@ -93,7 +93,7 @@ module HTTPAuth
           end
         end
       end
-      
+
       # Finds and unpacks the authorization credentials in a hash with the CGI enviroment. Returns [nil,nil] if no
       # credentials were found. See HTTPAuth::CREDENTIAL_HEADERS for supported variable names.
       #
