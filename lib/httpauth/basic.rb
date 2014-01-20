@@ -53,14 +53,13 @@ module HTTPAuth
   #   end
   class Basic
     class << self
-
       # Unpacks the HTTP Basic 'Authorization' credential header
       #
       # * <tt>authorization</tt>: The contents of the Authorization header
       # * Returns a list with two items: the username and password
       def unpack_authorization(authorization)
         d = authorization.split ' '
-        raise ArgumentError.new("HTTPAuth::Basic can only unpack Basic Authentication headers") unless d[0] == 'Basic'
+        fail(ArgumentError, 'HTTPAuth::Basic can only unpack Basic Authentication headers') unless d[0] == 'Basic'
         Base64.decode64(d[1]).split(':')[0..1]
       end
 
@@ -69,14 +68,14 @@ module HTTPAuth
       # * <tt>username</tt>: A string with the username
       # * <tt>password</tt>: A string with the password
       def pack_authorization(username, password)
-        "Basic %s" % Base64.encode64("#{username}:#{password}").gsub("\n", '')
+        format('Basic %s', Base64.encode64("#{username}:#{password}").gsub("\n", ''))
       end
 
       # Returns contents for the WWW-authenticate header
       #
       # * <tt>realm</tt>: A string with a recognizable title for the restricted resource
       def pack_challenge(realm)
-        "Basic realm=\"%s\"" % realm.gsub('"', '')
+        format("Basic realm=\"%s\"", realm.gsub('"', ''))
       end
 
       # Returns the name of the realm in a WWW-Authenticate header
@@ -84,12 +83,12 @@ module HTTPAuth
       # * <tt>authenticate</tt>: The contents of the WWW-Authenticate header
       def unpack_challenge(authenticate)
         if authenticate =~ /Basic\srealm=\"([^\"]*)\"/
-          return $1
+          return Regexp.last_match[1]
         else
           if authenticate =~ /^Basic/
-            raise UnwellformedHeader.new("Can't parse the WWW-Authenticate header, it's probably not well formed")
+            fail(UnwellformedHeader, "Can't parse the WWW-Authenticate header, it's probably not well formed")
           else
-            raise ArgumentError.new("HTTPAuth::Basic can only unpack Basic Authentication headers")
+            fail(ArgumentError, 'HTTPAuth::Basic can only unpack Basic Authentication headers')
           end
         end
       end
@@ -105,8 +104,8 @@ module HTTPAuth
       #   RewriteEngine on
       #   RewriteRule ^admin/ - [E=X-HTTP-AUTHORIZATION:%{HTTP:Authorization}]
       def get_credentials(env)
-        d = HTTPAuth::CREDENTIAL_HEADERS.inject(false) { |result,h| env[h] || result }
-        return unpack_authorization(d) unless !d or d.nil? or d.empty?
+        d = HTTPAuth::CREDENTIAL_HEADERS.inject(false) { |a, e| env[e] || a }
+        return unpack_authorization(d) unless !d || d.nil? || d.empty?
         [nil, nil]
       end
     end

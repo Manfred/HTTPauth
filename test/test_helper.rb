@@ -3,11 +3,10 @@ require 'fileutils'
 require 'yaml'
 
 class Test::Unit::TestCase
-
   def self.key_to_sym(hash)
     hash.inject({}) do |h, p|
       if p[1].kind_of? Hash
-        h[p[0].intern] = self.key_to_sym p[1]
+        h[p[0].intern] = key_to_sym p[1]
       else
         h[p[0].intern] = p[1]
       end
@@ -18,11 +17,11 @@ class Test::Unit::TestCase
   def self.fixtures(name)
     dir = File.dirname(__FILE__) + '/fixtures'
     File.open(dir + '/' + name.to_s + '.yml') do |f|
-      class_variable_set "@@#{name}", self.key_to_sym(YAML::load(f.read))
+      class_variable_set "@@#{name}", key_to_sym(YAML.load(f.read))
     end
   end
 
-  protected
+protected
 
   def tmpdir
     File.expand_path(File.dirname(__FILE__) + '/tmp')

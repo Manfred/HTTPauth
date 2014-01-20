@@ -1,5 +1,5 @@
 # encoding: utf-8
-$:.unshift File.dirname(__FILE__) + '/../lib'
+$LOAD_PATH.unshift File.dirname(__FILE__) + '/../lib'
 
 require 'test/unit'
 require 'httpauth/digest'
@@ -15,26 +15,26 @@ class DigestUtilsTest < Test::Unit::TestCase
         'Digest realm="mp@mount.dwerg.net", nonce="QG4LS2UcBAA=b978f6e632f6b9f7a8927ab48e20ef61d967552b", algorithm=MD5, qop="auth"' => {:realm => 'mp@mount.dwerg.net', :nonce => 'QG4LS2UcBAA=b978f6e632f6b9f7a8927ab48e20ef61d967552b', :algorithm => 'MD5', :qop => ['auth']}
       },
       :auth => {
-        'nextnonce="4b21d1ddd4f814c3e7c26226ffa4ddf33a261982ff915c1154a8"' => { :nextnonce => '4b21d1ddd4f814c3e7c26226ffa4ddf33a261982ff915c1154a8' },
+        'nextnonce="4b21d1ddd4f814c3e7c26226ffa4ddf33a261982ff915c1154a8"' => {:nextnonce => '4b21d1ddd4f814c3e7c26226ffa4ddf33a261982ff915c1154a8'},
         'nextnonce="5339bdd7a1d4032a4e4cac3733ee59d63da44efe9e1412f15881", qop=auth, cnonce="0a4f113b", nc=00000001' => {
-          :nextnonce => '5339bdd7a1d4032a4e4cac3733ee59d63da44efe9e1412f15881', :qop => 'auth', :cnonce => '0a4f113b', :nc => 1 },
+          :nextnonce => '5339bdd7a1d4032a4e4cac3733ee59d63da44efe9e1412f15881', :qop => 'auth', :cnonce => '0a4f113b', :nc => 1},
         'nextnonce="19c325e2ebf0e938c3c67225aba5f23ad245a522415d6cbb3c16", qop=auth, cnonce="0a4f113b", nc=00000001, rspauth="5ccc069c403ebaf9f0171e9517f40e41"' => {
           :nextnonce => '19c325e2ebf0e938c3c67225aba5f23ad245a522415d6cbb3c16', :qop => 'auth', :cnonce => '0a4f113b', :nc => 1,
-          :rspauth => '5ccc069c403ebaf9f0171e9517f40e41' }
+          :rspauth => '5ccc069c403ebaf9f0171e9517f40e41'}
       }
     }
   end
 
   def test_filter_h_on
-    assert_equal({1=>1,2=>2}, HTTPAuth::Digest::Utils.filter_h_on({1=>1,2=>2,3=>3}, [1,2]))
-    assert_equal({1=>1}, HTTPAuth::Digest::Utils.filter_h_on({1=>1,2=>2}, [1]))
-    assert_equal({2=>2}, HTTPAuth::Digest::Utils.filter_h_on({1=>1,2=>2}, [2]))
-    assert_equal({}, HTTPAuth::Digest::Utils.filter_h_on({1=>1,2=>2}, []))
+    assert_equal({1 => 1, 2 => 2}, HTTPAuth::Digest::Utils.filter_h_on({1 => 1, 2 => 2, 3 => 3}, [1, 2]))
+    assert_equal({1 => 1}, HTTPAuth::Digest::Utils.filter_h_on({1 => 1, 2 => 2}, [1]))
+    assert_equal({2 => 2}, HTTPAuth::Digest::Utils.filter_h_on({1 => 1, 2 => 2}, [2]))
+    assert_equal({}, HTTPAuth::Digest::Utils.filter_h_on({1 => 1, 2 => 2}, []))
     assert_equal({}, HTTPAuth::Digest::Utils.filter_h_on({}, []))
   end
 
   def test_encode_directives
-    @data.each do |k,v|
+    @data.each do |k, v|
       v.each do |encoded, directives|
         assert_equal encoded.length, HTTPAuth::Digest::Utils.encode_directives(directives, k).length, "In #{k}, in #{encoded}"
       end
@@ -42,7 +42,7 @@ class DigestUtilsTest < Test::Unit::TestCase
   end
 
   def test_decode_directives
-    @data.each do |k,v|
+    @data.each do |k, v|
       v.each do |encoded, directives|
         assert_equal directives, HTTPAuth::Digest::Utils.decode_directives(encoded, k), "In #{k}, in #{encoded}"
       end
@@ -57,12 +57,12 @@ class DigestUtilsTest < Test::Unit::TestCase
   end
 
   def test_encode_decode_mirror
-    @data.each do |k,v|
+    @data.each do |k, v|
       v.each do |_, directives|
         assert_equal directives,
-          HTTPAuth::Digest::Utils.decode_directives(
-            HTTPAuth::Digest::Utils.encode_directives(directives, k),
-          k), "In #{k}, in #{directives.inspect}"
+                     HTTPAuth::Digest::Utils.decode_directives(
+                       HTTPAuth::Digest::Utils.encode_directives(directives, k),
+                       k), "In #{k}, in #{directives.inspect}"
       end
     end
   end
@@ -90,27 +90,27 @@ class DigestUtilsTest < Test::Unit::TestCase
   def test_digest_a1
     [
       ['742ec081c96652ff7aed5d819ea0061b', {:username => 'marcél',
-        :realm => 'testrealm@host.com',
-        :password => 'secret'
+                                            :realm => 'testrealm@host.com',
+                                            :password => 'secret'
       }, {}],
       ['0630c5b7ea77f10dcca9bbcabb574cf9', {:username => 'marcél',
-        :realm => 'testrealm@host.com',
-        :password => 'secret',
-        :nonce => 'dcd98b7102dd2f0e8b11d0f600bfb0c093',
-        :cnonce => '0a4f113b',
-        :algorithm => 'MD5-sess'
+                                            :realm => 'testrealm@host.com',
+                                            :password => 'secret',
+                                            :nonce => 'dcd98b7102dd2f0e8b11d0f600bfb0c093',
+                                            :cnonce => '0a4f113b',
+                                            :algorithm => 'MD5-sess'
       }, {}],
       ['18c37cbf78f82ee4fcce3d457d02091a', {:username => 'Mustafa',
-        :realm => 'testrealm@host.com',
-        :password => 'Circle Of Life',
-        :nonce => 'dcd98b7102dd2f0e8b11d0f600bfb0c093',
-        :cnonce => '0a4f113b',
-        :algorithm => 'MD5-sess'
+                                            :realm => 'testrealm@host.com',
+                                            :password => 'Circle Of Life',
+                                            :nonce => 'dcd98b7102dd2f0e8b11d0f600bfb0c093',
+                                            :cnonce => '0a4f113b',
+                                            :algorithm => 'MD5-sess'
       }, {}],
       ['4501c091b0366d76ea3218b6cfdd8097', {}, {:digest => '742ec081c96652ff7aed5d819ea0061b'}],
       ['52cac169f0b9ffbc38f91a50fdc86097', {:nonce => 'dcd98b7102dd2f0e8b11d0f600bfb0c093',
-        :cnonce => '0a4f113b',
-        :algorithm => 'MD5-sess'
+                                            :cnonce => '0a4f113b',
+                                            :algorithm => 'MD5-sess'
       }, {:digest => '742ec081c96652ff7aed5d819ea0061b'}]
     ].each_with_index do |expected, i|
       assert_equal expected[0], HTTPAuth::Digest::Utils.digest_a1(expected[1], expected[2]), "In #{i}:"
@@ -119,11 +119,11 @@ class DigestUtilsTest < Test::Unit::TestCase
 
   def test_request_digest_a2
     [
-      ['bfdaff59f040a7a7e2a96fc32841dcf7', { :method => 'GET', :uri => '/posts/1'}],
-      ['7c79b99028e43d5bdb6110a6b579344e', { :method => 'POST', :uri => '/posts/4'}],
-      ['1db0cc6a00afef1763eb73abf5a0b151', { :method => 'TRACE', :uri => '/posts', :request_body => "I'm a request body!"}],
-      ['e73cf9345dfdd81c1c649d5c2eb46566', { :method => 'TRACE', :uri => '/posts', :request_body => "I'm a request body!", :qop => 'auth-int'}]
-    ].each_with_index do |expected,i|
+      ['bfdaff59f040a7a7e2a96fc32841dcf7', {:method => 'GET', :uri => '/posts/1'}],
+      ['7c79b99028e43d5bdb6110a6b579344e', {:method => 'POST', :uri => '/posts/4'}],
+      ['1db0cc6a00afef1763eb73abf5a0b151', {:method => 'TRACE', :uri => '/posts', :request_body => "I'm a request body!"}],
+      ['e73cf9345dfdd81c1c649d5c2eb46566', {:method => 'TRACE', :uri => '/posts', :request_body => "I'm a request body!", :qop => 'auth-int'}]
+    ].each_with_index do |expected, i|
       assert_equal expected[0], HTTPAuth::Digest::Utils.request_digest_a2(expected[1]), "In #{i}:"
     end
   end
@@ -131,11 +131,11 @@ class DigestUtilsTest < Test::Unit::TestCase
   def test_create_nonce
     salt = 'My secret salt'
     assert HTTPAuth::Digest::Utils.create_nonce(salt).length > 32
-    assert HTTPAuth::Digest::Utils.create_nonce(salt) != HTTPAuth::Digest::Utils.create_nonce(salt)
+    assert_not_equal HTTPAuth::Digest::Utils.create_nonce(salt), HTTPAuth::Digest::Utils.create_nonce(salt)
   end
 
   def test_create_opaque
     assert_equal 32, HTTPAuth::Digest::Utils.create_opaque.length
-    assert HTTPAuth::Digest::Utils.create_opaque != HTTPAuth::Digest::Utils.create_opaque
+    assert_not_equal HTTPAuth::Digest::Utils.create_opaque, HTTPAuth::Digest::Utils.create_opaque
   end
 end

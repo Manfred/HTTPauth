@@ -6,9 +6,9 @@ module HTTPAuth
   VERSION = '0.2'
 
   CREDENTIAL_HEADERS = %w{REDIRECT_X_HTTP_AUTHORIZATION X-HTTP-AUTHORIZATION X-HTTP_AUTHORIZATION HTTP_AUTHORIZATION}
-  SUPPORTED_SCHEMES = { :basic => 'Basic', :digest => 'Digest' }
-  SUPPORTED_QOPS = ['auth', 'auth-int']
-  SUPPORTED_ALGORITHMS = ['MD5', 'MD5-sess']
+  SUPPORTED_SCHEMES = {:basic => 'Basic', :digest => 'Digest'}
+  SUPPORTED_QOPS = %w[auth auth-int]
+  SUPPORTED_ALGORITHMS = %w[MD5 MD5-sess]
   PREFERRED_QOP = 'auth'
   PREFERRED_ALGORITHM = 'MD5'
 end

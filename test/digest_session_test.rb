@@ -1,5 +1,5 @@
-$:.unshift File.dirname(__FILE__)
-$:.unshift File.dirname(__FILE__) + '/../lib'
+$LOAD_PATH.unshift File.dirname(__FILE__)
+$LOAD_PATH.unshift File.dirname(__FILE__) + '/../lib'
 
 require 'test/unit'
 require 'digest/md5'
@@ -8,7 +8,6 @@ require 'test_helper'
 require 'httpauth/digest'
 
 class DigestSessionTest < Test::Unit::TestCase
-
   def setup
     remove_tmpdir
     create_tmpdir

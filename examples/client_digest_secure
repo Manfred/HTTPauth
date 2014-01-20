@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-$:.unshift File.expand_path(File.dirname(__FILE__) + '/../lib')
+$LOAD_PATH.unshift File.expand_path(File.dirname(__FILE__) + '/../lib')
 
 require 'rubygems' rescue LoadError
 require 'uri'
@@ -10,7 +10,6 @@ require 'httpauth/digest'
 SALT = 'My very very secret salt'
 
 class AuthenticationCache
-
   def initialize
     @uri = nil
     @credentials = nil
@@ -25,7 +24,7 @@ class AuthenticationCache
     @credentials
   end
 
-  def update_usage_for(uri, reset_count_for_uri=false)
+  def update_usage_for(uri, reset_count_for_uri = false)
     if reset_count_for_uri
       @credentials.nc = 0
     else
@@ -33,7 +32,7 @@ class AuthenticationCache
     end
   end
 
-  protected
+protected
 
   # Is uri1 more general than uri2
   def more_general_uri?(uri1, uri2)
@@ -82,29 +81,29 @@ class AuthenticatedClient
 
     # If credentials were stored, use them. Otherwise do a normal get
     credentials = @cache.get_credentials
-    unless credentials.nil?
-      puts "sending credentials: #{credentials.to_header}"
-      response = @client.get resource, :head => {"Authorization" => credentials.to_header}
-    else
+    if credentials.nil?
       response = @client.get resource
+    else
+      puts "sending credentials: #{credentials.to_header}"
+      response = @client.get resource, :head => {'Authorization' => credentials.to_header}
     end
     # If response was 401, retry with authentication
-    if response.http_status == '401' and !response['WWW_AUTHENTICATE'].nil?
+    if response.http_status == '401' && !response['WWW_AUTHENTICATE'].nil?
       puts "got challenge: #{response['WWW_AUTHENTICATE']}"
       challenge = Challenge.from_header(response['WWW_AUTHENTICATE'])
       (stale = challenge.stale) rescue NoMethodError
-      unless stale
-        username, password = get_credentials_from_user
-      else
+      if stale
         username = credentials.username
         password = credentials.password
+      else
+        username, password = get_credentials_from_user
       end
       credentials = Credentials.from_challenge(challenge,
-        {:uri => resource, :username => username, :password => password, :method => 'GET'}
+                                               :uri => resource, :username => username, :password => password, :method => 'GET'
       )
       puts "sending credentials: #{credentials.to_header}"
       @cache.set_credentials_for uri.path, credentials
-      response = @client.get resource, :head => {"Authorization" => credentials.to_header}
+      response = @client.get resource, :head => {'Authorization' => credentials.to_header}
     end
     # If the server sends authentication info use the information for the next request
     if response['AUTHENTICATION_INFO']
@@ -118,7 +117,7 @@ class AuthenticatedClient
   end
 end
 
-if $0 == __FILE__
+if $PROGRAM_NAME == __FILE__
   unless ARGV.length == 2
     puts <<-EOT
 Usage: client_digest_secure get <url>

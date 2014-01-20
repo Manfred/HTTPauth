@@ -1,6 +1,6 @@
 # encoding: us-ascii
 
-$:.unshift File.dirname(__FILE__) + '/../lib'
+$LOAD_PATH.unshift File.dirname(__FILE__) + '/../lib'
 
 require 'test/unit'
 require 'httpauth/basic'
@@ -10,7 +10,7 @@ class BasicTest < Test::Unit::TestCase
   def setup
     @secret_bob_credentials = 'Basic Ym9iOnNlY3JldA=='
     @authorizations = {
-      @secret_bob_credentials => ['bob', 'secret'],
+      @secret_bob_credentials => %w[bob secret],
       'Basic bWFyY8OpbDpnb2Q=' => ["marc\303\251l", 'god']
       }
     @authentications = {
