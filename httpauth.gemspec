@@ -15,5 +15,6 @@ Gem::Specification.new do |spec|
 
   spec.has_rdoc = true
   spec.extra_rdoc_files = ["README.md", "LICENSE"]
+  spec.license = "MIT"
   spec.rdoc_options << "--charset=utf-8"
 end
