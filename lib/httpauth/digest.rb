@@ -381,7 +381,7 @@ module HTTPAuth
           elsif @h[:qop].include?(HTTPAuth::PREFERRED_QOP)
             @h[:qop] = HTTPAuth::PREFERRED_QOP
           else
-            qop = @h[:qop].detect { |qop| HTTPAuth::SUPPORTED_QOPS.include? qop }
+            qop = @h[:qop].detect { |qop_field| HTTPAuth::SUPPORTED_QOPS.include? qop_field }
             unless qop.nil?
               @h[:qop] = qop
             else
